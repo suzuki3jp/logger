@@ -18,6 +18,9 @@
     "url": "https://github.com/suzuki3jp/logger/issues"
   },
   "homepage": "https://github.com/suzuki3jp/logger#readme",
+  "files": [
+    "lib"
+  ],
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^5.49.0",
     "@typescript-eslint/parser": "^5.49.0",
