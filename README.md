@@ -3,6 +3,7 @@
 ## Feature
 - event-driven
 - Save log to csv.
+- Typed
 ## Installation
 ```Shell
 npm install @suzuki3jp/logger
