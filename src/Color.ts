@@ -42,6 +42,44 @@ const fontColorCtrlChar = {
     reset: '\x1b[0m',
 };
 
+export class BackgroundColor {
+    /**
+     * Add background color to string.
+     */
+    static add(color: keyof Omit<backgroundColors, 'default'>, str: string): string {
+        const colors = Object.keys(backgroundColorCtrlChar);
+        if (!colors.includes(color)) throw Error(ErrorMessages.invalidColor);
+        str = this.remove(str);
+        return backgroundColorCtrlChar[color] + str + backgroundColorCtrlChar.default;
+    }
+
+    /**
+     * Remove background color from string.
+     */
+    static remove(str: string): string {
+        const values = Object.values(backgroundColorCtrlChar);
+        let result = str;
+        values.forEach((value) => {
+            result = result.replaceAll(value, '');
+        });
+        return result;
+    }
+}
+
+type backgroundColors = typeof backgroundColorCtrlChar;
+
+const backgroundColorCtrlChar = {
+    black: '\x1b[40m',
+    red: '\x1b[41m',
+    green: '\x1b[42m',
+    yellow: '\x1b[43m',
+    blue: '\x1b[44m',
+    magenta: '\x1b[45m',
+    cyan: '\x1b[46m',
+    white: '\x1b[47m',
+    default: '\x1b[49m',
+};
+
 const ErrorMessages = {
     invalidColor: 'Invalid color name.',
 };
