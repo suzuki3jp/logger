@@ -31,7 +31,7 @@ export class Logger extends EventEmitter {
      * @returns log message.
      */
     emitLog(event: keyof Omit<LoggerEvents, 'ready'>, ...messages: string[]): string {
-        const formattedMessage = this._fomatMessages(event, messages);
+        const formattedMessage = this._formatMessages(event, messages);
         this.emit(event, formattedMessage, messages);
         return formattedMessage;
     }
@@ -50,7 +50,7 @@ export class Logger extends EventEmitter {
         return newData;
     }
 
-    private _fomatMessages(type: keyof Omit<LoggerEvents, 'ready'>, messages: string[]) {
+    private _formatMessages(type: keyof Omit<LoggerEvents, 'ready'>, messages: string[]) {
         const TYPE = type.toUpperCase();
         const message = messages.join('');
         if (this.timeZone === 'JST') return `[${JST.getDateString()}] ${TYPE}: ${message}\n`;
