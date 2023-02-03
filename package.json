@@ -1,6 +1,6 @@
 {
   "name": "@suzuki3jp/logger",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "A simple logger.",
   "main": "./lib/index.js",
   "types": "./lib/index.d.ts",
