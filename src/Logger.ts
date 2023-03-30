@@ -1,10 +1,12 @@
-import { JST, UTC } from '@suzuki3jp/utils';
 import { EventEmitter } from 'node:events';
 import { readFileSync, writeFileSync } from 'node:fs';
+import dayjs from 'dayjs';
+import utcPlugin from 'dayjs/plugin/utc';
+dayjs.extend(utcPlugin);
+import chalk from 'chalk';
 
 export class Logger extends EventEmitter {
     isSaveToCsv: boolean;
-    timeZone: 'JST' | 'UTC';
     csvPath: string | null;
 
     public on<K extends keyof LoggerEvents>(events: K, listener: (...args: LoggerEvents[K]) => void): this;
@@ -15,7 +17,6 @@ export class Logger extends EventEmitter {
     constructor(isSaveToCsv: boolean, options?: Options) {
         super();
         this.isSaveToCsv = isSaveToCsv;
-        this.timeZone = options?.timeZone ?? 'JST';
         if (this.isSaveToCsv) {
             // CSVにログを保存する時
             if (!options || !options.path) throw new Error(ErrorMessages.requiredOptions);
@@ -36,6 +37,36 @@ export class Logger extends EventEmitter {
         return formattedMessage;
     }
 
+    system(...messages: string[]): string {
+        const formattedMessage = this._formatMessages('system', messages);
+        this.emit('system', formattedMessage, messages);
+        return formattedMessage;
+    }
+
+    info(...messages: string[]): string {
+        const formattedMessage = this._formatMessages('info', messages);
+        this.emit('info', formattedMessage, messages);
+        return formattedMessage;
+    }
+
+    debug(...messages: string[]): string {
+        const formattedMessage = this._formatMessages('debug', messages);
+        this.emit('debug', formattedMessage, messages);
+        return formattedMessage;
+    }
+
+    warn(...messages: string[]): string {
+        const formattedMessage = this._formatMessages('warn', messages);
+        this.emit('warn', formattedMessage, messages);
+        return formattedMessage;
+    }
+
+    err(...messages: string[]): string {
+        const formattedMessage = this._formatMessages('error', messages);
+        this.emit('error', formattedMessage, messages);
+        return formattedMessage;
+    }
+
     /**
      * Append new data to CSV.
      *
@@ -53,8 +84,7 @@ export class Logger extends EventEmitter {
     private _formatMessages(type: keyof Omit<LoggerEvents, 'ready'>, messages: string[]) {
         const TYPE = type.toUpperCase();
         const message = messages.join('');
-        if (this.timeZone === 'JST') return `[${JST.getDateString()}] ${TYPE}: ${message}\n`;
-        return `[${UTC.getDateString()}] ${TYPE}: ${message}\n`;
+        return `${colorLogs[type](`[${dayjs.utc().toISOString()}] [${TYPE}] - `)} ${message}`;
     }
 }
 
@@ -64,7 +94,16 @@ export interface LoggerEvents {
     ready: [logger: Logger];
     system: [formattedMessage: string, originalMessages: string[]];
     info: [formattedMessage: string, originalMessages: string[]];
+    warn: [formattedMessage: string, originalMessages: string[]];
 }
+
+const colorLogs = {
+    system: chalk.blue,
+    debug: chalk.gray,
+    info: chalk.green,
+    warn: chalk.yellow,
+    error: chalk.red,
+};
 
 export interface Options {
     /**
