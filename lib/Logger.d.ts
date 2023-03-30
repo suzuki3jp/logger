@@ -2,7 +2,6 @@
 import { EventEmitter } from 'node:events';
 export declare class Logger extends EventEmitter {
     isSaveToCsv: boolean;
-    timeZone: 'JST' | 'UTC';
     csvPath: string | null;
     on<K extends keyof LoggerEvents>(events: K, listener: (...args: LoggerEvents[K]) => void): this;
     constructor(isSaveToCsv: boolean, options?: Options);
@@ -12,6 +11,11 @@ export declare class Logger extends EventEmitter {
      * @returns log message.
      */
     emitLog(event: keyof Omit<LoggerEvents, 'ready'>, ...messages: string[]): string;
+    system(...messages: string[]): string;
+    info(...messages: string[]): string;
+    debug(...messages: string[]): string;
+    warn(...messages: string[]): string;
+    err(...messages: string[]): string;
     /**
      * Append new data to CSV.
      *
@@ -27,6 +31,7 @@ export interface LoggerEvents {
     ready: [logger: Logger];
     system: [formattedMessage: string, originalMessages: string[]];
     info: [formattedMessage: string, originalMessages: string[]];
+    warn: [formattedMessage: string, originalMessages: string[]];
 }
 export interface Options {
     /**
